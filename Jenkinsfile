@@ -82,17 +82,18 @@ pipeline {
                 }
             steps {
                 sh '''
-                    npm install netlify-cli
+                    npm install netlify-cli node-jq
                     node_modules/.bin/netlify --version
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build
+                    node_modules/.bin/netlify deploy --dir=build --json > staging-deploy.txt
+                    node_modules/.bin/node-jq -r .deploy_url staging-deploy.txt
                 '''
             }
         }
 
         stage('Approval') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
+                timeout(time: 3, unit: 'MINUTES') {
                     input message: 'Are you ready to rumble?', ok: 'YES SIR'
                 }
             }
