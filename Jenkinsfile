@@ -88,7 +88,7 @@ pipeline {
                     node_modules/.bin/netlify deploy --dir=build --json > staging-deploy.txt
                     node_modules/.bin/node-jq -r .deploy_url staging-deploy.txt
                 '''
-                
+
                 script {
                     env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' staging-deploy.txt", returnStdout: true)
                 }
@@ -126,24 +126,24 @@ pipeline {
             }
         }
 
-        stage('Deploy prod') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                    }
-                }
-            steps {
-                sh '''
-                    npm install netlify-cli
-                    node_modules/.bin/netlify --version
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-                '''
-            }
-        }
+        // stage('Deploy prod') {
+        //     agent {
+        //         docker {
+        //             image 'node:18-alpine'
+        //             reuseNode true
+        //             }
+        //         }
+        //     steps {
+        //         sh '''
+        //             npm install netlify-cli
+        //             node_modules/.bin/netlify --version
+        //             node_modules/.bin/netlify status
+        //             node_modules/.bin/netlify deploy --dir=build --prod
+        //         '''
+        //     }
+        // }
 
-        stage('Prod E2E') {
+        stage('Deploy Prod') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -155,6 +155,11 @@ pipeline {
             }
             steps {
                 sh '''
+                    node --version
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod
                     npx playwright test --reporter=html
                 '''
             }
