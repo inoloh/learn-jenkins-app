@@ -88,11 +88,12 @@ pipeline {
                     node_modules/.bin/netlify deploy --dir=build --json > staging-deploy.txt
                     node_modules/.bin/node-jq -r .deploy_url staging-deploy.txt
                 '''
+                
+                script {
+                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' staging-deploy.txt", returnStdout: true)
+                }
             }
 
-            script {
-                env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' staging-deploy.txt", returnStdout: true)
-            }
         }
 
         stage('Staging E2E') {
