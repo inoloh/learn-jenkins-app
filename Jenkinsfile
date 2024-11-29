@@ -4,6 +4,7 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = credentials('site_id')
         NETLIFY_AUTH_TOKEN = credentials('netlify_pat')
+        REACT_APP_VERSION = '1.2.3'
     }
 
     stages {
@@ -125,7 +126,7 @@ pipeline {
         stage('Approval') {
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
-                    input message: 'Are you ready to rumble?', ok: 'YES SIR'
+                    input message: 'Are you ready to rumble?', ok: 'YES MAM'
                 }
             }
         }
